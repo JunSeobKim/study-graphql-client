@@ -1,10 +1,11 @@
 import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import styled from "styled-components";
+import Movie from "../components/Movie";
 
 const GET_MOVIES = gql`
   query {
-    movies(limit: 5) {
+    movies(limit: 20) {
       id
       title
       medium_cover_image
@@ -43,8 +44,19 @@ const Loading = styled.div`
   margin-top: 10px;
 `;
 
+const Section = styled.section`
+  display: grid;
+  grid-template-columns: repeat(6, minmax(200px, 1fr));
+  gap: 20px;
+  width: 70%;
+`;
+
+const Movies = styled.div`
+  width: 100%;
+`;
+
 export default () => {
-  const { loading, error, data } = useQuery(GET_MOVIES);
+  const { loading, error, data } = useQuery(GET_MOVIES); // useQuery : 쿼리 request에 따른 reponse 데이터 가져옴
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
@@ -55,6 +67,20 @@ export default () => {
         <Title>Apollo</Title>
         <Subtitle>GraphQL</Subtitle>
       </Header>
+      {loading && <Loading>Loading...</Loading>}
+      <Section>
+        {!loading &&
+          data.movies &&
+          data.movies.map((movie) => (
+            <Movies>
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                background={movie.medium_cover_image}
+              />
+            </Movies>
+          ))}
+      </Section>
     </Container>
   );
 };
